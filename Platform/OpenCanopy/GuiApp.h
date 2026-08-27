@@ -115,6 +115,7 @@ enum {
 
 typedef struct _BOOT_PICKER_GUI_CONTEXT {
   GUI_IMAGE                              Background;
+  GUI_IMAGE                              SnowFlake;
   GUI_IMAGE                              Icons[ICON_NUM_TOTAL][ICON_TYPE_COUNT];
   GUI_IMAGE                              Labels[LABEL_NUM_TOTAL];
   // GUI_IMAGE                         Poof[5];
