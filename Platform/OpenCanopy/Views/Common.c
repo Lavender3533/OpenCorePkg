@@ -19,6 +19,93 @@
 GLOBAL_REMOVE_IF_UNREFERENCED INT64  mBackgroundImageOffsetX;
 GLOBAL_REMOVE_IF_UNREFERENCED INT64  mBackgroundImageOffsetY;
 
+extern UINT32  mSnowPhase;
+
+#define SNOW_FLAKE_COUNT 110
+
+STATIC
+UINT32
+SnowHash (
+  UINT32  X
+  )
+{
+  X ^= X >> 16;
+  X *= 0x7FEB352DU;
+  X ^= X >> 15;
+  X *= 0x846CA68BU;
+  X ^= X >> 16;
+  return X;
+}
+
+STATIC
+VOID
+SnowDrawFlakes (
+  IN GUI_DRAWING_CONTEXT  *DrawContext,
+  IN INT64                ClipX,
+  IN INT64                ClipY,
+  IN INT64                ClipWidth,
+  IN INT64                ClipHeight
+  )
+{
+  CONST GUI_IMAGE  *Flake;
+  UINT32           RangeX;
+  UINT32           RangeY;
+  UINT32           Index;
+
+  Flake = &DrawContext->GuiContext->SnowFlake;
+  if ((Flake->Buffer == NULL) || (Flake->Width == 0) || (Flake->Height == 0)) {
+    return;
+  }
+
+  RangeX = (UINT32)(DrawContext->Screen.Width  + Flake->Width);
+  RangeY = (UINT32)(DrawContext->Screen.Height + Flake->Height);
+
+  for (Index = 0; Index < SNOW_FLAKE_COUNT; ++Index) {
+    UINT32 HashA = SnowHash (Index + 1U);
+    UINT32 HashB = SnowHash (Index + SNOW_FLAKE_COUNT + 1U);
+    UINT32 HashC = SnowHash (Index + 2U * SNOW_FLAKE_COUNT + 1U);
+    UINT32 HashD = SnowHash (Index + 3U * SNOW_FLAKE_COUNT + 1U);
+    UINT8  Opacity;
+    INT32  Sway;
+    INT64  VelX;
+    INT64  VelY;
+    INT64  PosX;
+    INT64  PosY;
+
+    Sway    = (INT32)(((mSnowPhase * 2U + (HashA % 200U)) % 256U) - 128U) / 8;
+    Opacity = (UINT8)(0x60U + (HashD % 0x70U));
+    VelX    = (INT64)((INT32)(HashB % 41U) - 20);
+    VelY    = 2 + (INT64)(HashC % 6U);
+
+    PosX = (INT64)(HashA % RangeX) + (INT64)mSnowPhase * VelX + Sway;
+    PosY = (INT64)(HashB % RangeY) + (INT64)mSnowPhase * VelY;
+    PosX %= RangeX;
+    PosY %= RangeY;
+    if (PosX < 0) {
+      PosX += RangeX;
+    }
+    if (PosY < 0) {
+      PosY += RangeY;
+    }
+    PosX -= Flake->Width;
+    PosY -= Flake->Height;
+
+    GuiDrawChildImage (
+      Flake,
+      Opacity,
+      DrawContext,
+      0,
+      0,
+      PosX,
+      PosY,
+      ClipX,
+      ClipY,
+      ClipWidth,
+      ClipHeight
+      );
+  }
+}
+
 GLOBAL_REMOVE_IF_UNREFERENCED GUI_INTERPOLATION  mCommonIntroOpacityInterpol = {
   GuiInterpolTypeSmooth,
   0,
@@ -224,6 +311,19 @@ InternalCommonViewDraw (
       0,
       mBackgroundImageOffsetX,
       mBackgroundImageOffsetY,
+      OffsetX,
+      OffsetY,
+      Width,
+      Height
+      );
+  }
+
+  //
+  // Animated snow layer, drawn behind every UI element.
+  //
+  if (DrawContext->GuiContext->SnowFlake.Buffer != NULL) {
+    SnowDrawFlakes (
+      DrawContext,
       OffsetX,
       OffsetY,
       Width,
