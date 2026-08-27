@@ -1960,14 +1960,14 @@ BootPickerViewInitialize (
   mBootPickerLeftScroll.Hdr.Obj.Height  = BOOT_SCROLL_BUTTON_DIMENSION * GuiContext->Scale;
   mBootPickerLeftScroll.Hdr.Obj.Width   = BOOT_SCROLL_BUTTON_DIMENSION * GuiContext->Scale;
   mBootPickerLeftScroll.Hdr.Obj.OffsetX = BOOT_SCROLL_BUTTON_SPACE;
-  mBootPickerLeftScroll.Hdr.Obj.OffsetY = (DrawContext->Screen.Height - mBootPickerLeftScroll.Hdr.Obj.Height) / 2;
+  mBootPickerLeftScroll.Hdr.Obj.OffsetY = ((DrawContext->Screen.Height - mBootPickerLeftScroll.Hdr.Obj.Height) * 3) / 5;
   mBootPickerLeftScroll.ImageId         = ICON_LEFT;
   mBootPickerLeftScroll.ImageState      = ICON_TYPE_BASE;
 
   mBootPickerRightScroll.Hdr.Obj.Height  = BOOT_SCROLL_BUTTON_DIMENSION * GuiContext->Scale;
   mBootPickerRightScroll.Hdr.Obj.Width   = BOOT_SCROLL_BUTTON_DIMENSION * GuiContext->Scale;
   mBootPickerRightScroll.Hdr.Obj.OffsetX = DrawContext->Screen.Width - mBootPickerRightScroll.Hdr.Obj.Width - BOOT_SCROLL_BUTTON_SPACE;
-  mBootPickerRightScroll.Hdr.Obj.OffsetY = (DrawContext->Screen.Height - mBootPickerRightScroll.Hdr.Obj.Height) / 2;
+  mBootPickerRightScroll.Hdr.Obj.OffsetY = ((DrawContext->Screen.Height - mBootPickerRightScroll.Hdr.Obj.Height) * 3) / 5;
   mBootPickerRightScroll.ImageId         = ICON_RIGHT;
   mBootPickerRightScroll.ImageState      = ICON_TYPE_BASE;
   //
@@ -1984,7 +1984,7 @@ BootPickerViewInitialize (
   // Center the icons and labels excluding the selector images vertically.
   //
   ASSERT ((DrawContext->Screen.Height - (BOOT_ENTRY_HEIGHT - BOOT_ENTRY_ICON_SPACE) * GuiContext->Scale) / 2 - (BOOT_ENTRY_ICON_SPACE * GuiContext->Scale) == (DrawContext->Screen.Height - (BOOT_ENTRY_HEIGHT + BOOT_ENTRY_ICON_SPACE) * GuiContext->Scale) / 2);
-  mBootPickerContainer.Obj.OffsetY = (DrawContext->Screen.Height - (BOOT_ENTRY_HEIGHT + BOOT_ENTRY_ICON_SPACE) * GuiContext->Scale) / 2;
+  mBootPickerContainer.Obj.OffsetY = ((DrawContext->Screen.Height - (BOOT_ENTRY_HEIGHT + BOOT_ENTRY_ICON_SPACE) * GuiContext->Scale) * 3) / 5;
 
   mBootPicker.Hdr.Obj.Height = BOOT_SELECTOR_HEIGHT * GuiContext->Scale;
   //
