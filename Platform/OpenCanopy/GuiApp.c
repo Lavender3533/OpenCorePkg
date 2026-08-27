@@ -109,6 +109,7 @@ InternalContextDestruct (
   }
 
   InternalSafeFreePool (Context->Background.Buffer);
+  InternalSafeFreePool (Context->SnowFlake.Buffer);
   InternalSafeFreePool (Context->FontContext.FontImage.Buffer);
 
   /*
@@ -460,6 +461,21 @@ InternalContextConstruct (
     FALSE,
     Context->Prefix,
     FALSE
+    );
+
+  //
+  // Snow flakes (optional theme asset; absent -> no snow).
+  //
+  LoadImageFileFromStorage (
+    &Context->SnowFlake,
+    Storage,
+    "SnowFlake",
+    Context->Scale,
+    0,
+    0,
+    FALSE,
+    Context->Prefix,
+    TRUE
     );
 
   if (Context->BackgroundColor.Raw == APPLE_COLOR_SYRAH_BLACK) {
