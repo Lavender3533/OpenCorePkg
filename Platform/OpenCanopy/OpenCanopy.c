@@ -1052,6 +1052,10 @@ GuiGetBaseCoords (
 }
 
 VOID
+UINT32  mSnowPhase        = 0;
+STATIC UINT64  mSnowTimeNs      = 0;
+STATIC UINT64  mSnowLastFrameNs = 0;
+
 GuiDrawLoop (
   IN OUT GUI_DRAWING_CONTEXT  *DrawContext
   )
@@ -1252,6 +1256,19 @@ GuiDrawLoop (
     GuiFlushScreen (DrawContext);
 
     NewLastTsc = AsmReadTsc ();
+
+    //
+    // Advance the snow animation at a fixed ~30 fps, forcing a full repaint.
+    //
+    mSnowTimeNs += GetTimeInNanoSecond (NewLastTsc - LastTsc);
+    if (  (DrawContext->GuiContext != NULL)
+       && (DrawContext->GuiContext->SnowFlake.Buffer != NULL)
+       && (mSnowTimeNs - mSnowLastFrameNs >= 33000000ULL))
+    {
+      mSnowLastFrameNs = mSnowTimeNs;
+      ++mSnowPhase;
+      GuiRequestDraw (0, 0, DrawContext->Screen.Width, DrawContext->Screen.Height);
+    }
 
     if (  (DrawContext->GuiContext->AudioPlaybackTimeout >= 0)
        && DrawContext->GuiContext->PickerContext->PickerAudioAssist)
